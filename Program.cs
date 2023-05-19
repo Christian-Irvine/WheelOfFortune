@@ -2,10 +2,38 @@
 {
     internal class Program
     {
+        struct Players
+        {
+            public string lastName;
+            public string firstName;
+            public string interest;
+            public int score;
+        }
+
+        static Players[] playersArray;
+
         static void Main()
         {
+            int playerCount = 38;
+
+            SetupPlayers(playerCount);
             Introduction();
         }
+
+        static void SetupPlayers(int playerCount)
+        {
+            playersArray = new Players[playerCount];
+
+            for (int i = 0; i < playerCount; i++)
+            {
+                playersArray[i].lastName = "Henderson";
+                playersArray[i].firstName = "Bill";
+                playersArray[i].interest = "Golf";
+                playersArray[i].score = 0;
+            }
+        }
+
+
 
         static void Introduction()
         {
@@ -16,7 +44,7 @@
         {
             bool exitCode = false;
             int padValue = 8;
-            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player"};
+            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player" };
 
             do
             {
@@ -47,7 +75,7 @@
                         ListContestants();
                         break;
                     case 2:
-                        //Task2(input);
+                        UpdatePlayerInterests();
                         break;
                     case 3:
                         //Task3(input);
@@ -60,10 +88,25 @@
                         Thread.Sleep(1000);
                         break;
                 }
-            } while (exitCode == false);
+            } while (!exitCode);
         }
 
         static void ListContestants()
+        {
+
+        }
+
+        static void UpdatePlayerInterests()
+        {
+
+        }
+
+        static void PickFinalists()
+        {
+
+        }
+
+        static void PickPlayer()
         {
 
         }
