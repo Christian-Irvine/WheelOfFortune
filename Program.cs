@@ -119,14 +119,20 @@ namespace WheelOfFortune
                         break;
                     case 4:
                         player = PickPlayer(finalists, pickedFinalists);
+
                         if (player.firstName != null)
                         {
                             pickedPlayer = true;
                         }
                         break;
                     case 5:
-                        TheGame(pickedPlayer, player);
-                        //pickedFinalists = false;
+                        bool playedGame = TheGame(pickedPlayer, player);
+
+                        if (playedGame)
+                        {
+                            pickedFinalists = false;
+                            pickedPlayer = false;
+                        }
                         break;
                     default:
                         Console.WriteLine("Not a valid number, please try again");
@@ -383,11 +389,12 @@ namespace WheelOfFortune
 
         static Players PickPlayer(Players[] finalists, bool pickedFinalists)
         {
-            //If the finalists are picked
+            //If the finalists are picked.
             if (pickedFinalists)
             {
                 Console.WriteLine("The current finalists consist of: \n");
 
+                //Write out finalists to screen.
                 foreach (Players players in finalists)
                 {
                     Console.WriteLine(players.firstName.PadRight(18) + players.lastName);
@@ -396,8 +403,10 @@ namespace WheelOfFortune
                 Console.WriteLine("\nPress Enter to pick the finalist");
                 Console.ReadLine();
 
+                //Plays loop of picking player.
                 LoadingLoop("Picking Winner");
 
+                //Picks random winner.
                 Players player = finalists[rand.Next(10)];
 
                 Console.WriteLine($"Congradulations to {player.firstName} {player.lastName}.");
@@ -409,28 +418,36 @@ namespace WheelOfFortune
                 return player;
             }
 
+            //If you haven't picked the finalists yet.
             else
             {
                 Console.WriteLine("Sorry you haven't picked the finalists yet, please go back and do that.\n");
                 Console.WriteLine("Press Enter to continue.");
                 Console.ReadLine();
 
+                //Empty player to do a check with.
                 return new Players();
             }
         }
 
-        static void TheGame(bool pickedPlayer, Players player)
+        static bool TheGame(bool pickedPlayer, Players player)
         {
             if (pickedPlayer)
             {
-                Console.WriteLine("Woo");
+                bool gameRunning = true;
+
+                while (gameRunning)
+                {
+
+
+
+
+
+                }
 
                 Console.ReadLine();
 
-
-
-
-
+                return true;
             }
 
             else
@@ -438,6 +455,8 @@ namespace WheelOfFortune
                 Console.WriteLine("Sorry you haven't picked a player yet, please go back and do that.\n");
                 Console.WriteLine("Press Enter to continue");
                 Console.ReadLine();
+
+                return false;
             }
         }
     }
