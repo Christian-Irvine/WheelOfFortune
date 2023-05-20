@@ -76,8 +76,9 @@ namespace WheelOfFortune
         {
             bool exitCode = false;
             int padValue = 8;
-            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player" };
+            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player", "Play Game" };
             Players[] finalists = new Players[0];
+            Players player = new Players();
             bool pickedFinalists = false;
             bool pickedPlayer = false;
 
@@ -88,7 +89,7 @@ namespace WheelOfFortune
                 Console.WriteLine("Options for the menu are: \n");
 
 
-                for (int i = 1; i < 5; i++)
+                for (int i = 1; i < 6; i++)
                 {
                     Console.Write(i.ToString().PadRight(padValue));
                     Console.WriteLine($"{taskName[i - 1]}");
@@ -117,12 +118,15 @@ namespace WheelOfFortune
                         pickedFinalists = true;
                         break;
                     case 4:
-                        PickPlayer(finalists, pickedFinalists);
-                        pickedPlayer = true;
+                        player = PickPlayer(finalists, pickedFinalists);
+                        if (player.firstName != null)
+                        {
+                            pickedPlayer = true;
+                        }
                         break;
                     case 5:
-                        TheGame();
-                        pickedFinalists = false;
+                        TheGame(pickedPlayer, player);
+                        //pickedFinalists = false;
                         break;
                     default:
                         Console.WriteLine("Not a valid number, please try again");
@@ -324,6 +328,8 @@ namespace WheelOfFortune
         //Picks 10 random players to be the finalists
         static Players[] PickFinalists(Players[] playersArray)
         {
+            LoadingLoop("Generating Finalists");
+
             Players[] finalists = new Players[10];
             //Creates an Array of all players to subtract from.
             Players[] playersSubtract = new Players[PLAYERCOUNT];
@@ -334,7 +340,7 @@ namespace WheelOfFortune
             for (int i = 0; i < 10; i++)
             {
                 //Generates a random number from the possible people on the subtract list.
-                int randNum = rand.Next(PLAYERCOUNT + 1 - i);
+                int randNum = rand.Next(PLAYERCOUNT - i);
 
                 finalists[i] = playersSubtract[randNum];
 
@@ -343,17 +349,96 @@ namespace WheelOfFortune
                 Array.Resize(ref playersSubtract, playersSubtract.Length - 1);
             }
 
+            Console.WriteLine("Congratulations to the finalists: \n");
+
+            //Lists all the finalists.
+            foreach (Players player in finalists)
+            {
+                Console.WriteLine(player.firstName.PadRight(18) + player.lastName);
+            }
+
+            Console.WriteLine("\n\nPress Enter to continue.");
+
+            Console.ReadLine();
+
             return finalists;
         }
 
-        static void PickPlayer(Players[] finalists, bool pickedFinalists)
+        //Does loading animation.
+        static void LoadingLoop(string message)
         {
-
+            Console.Clear();
+            //Generating loop.
+            for (int i = 0; i < 3; i++)
+            {
+                for (int dots = 0; dots <= 3; dots++)
+                {
+                    //Adds dot count dots.
+                    Console.Write(message + new string('.', dots));
+                    Thread.Sleep(150);
+                    Console.Clear();
+                }
+            }
         }
 
-        static void TheGame()
+        static Players PickPlayer(Players[] finalists, bool pickedFinalists)
         {
+            //If the finalists are picked
+            if (pickedFinalists)
+            {
+                Console.WriteLine("The current finalists consist of: \n");
 
+                foreach (Players players in finalists)
+                {
+                    Console.WriteLine(players.firstName.PadRight(18) + players.lastName);
+                }
+
+                Console.WriteLine("\nPress Enter to pick the finalist");
+                Console.ReadLine();
+
+                LoadingLoop("Picking Winner");
+
+                Players player = finalists[rand.Next(10)];
+
+                Console.WriteLine($"Congradulations to {player.firstName} {player.lastName}.");
+                Console.WriteLine("You get to play the game!\n");
+
+                Console.WriteLine("Press Enter to continue.");
+                Console.ReadLine();
+
+                return player;
+            }
+
+            else
+            {
+                Console.WriteLine("Sorry you haven't picked the finalists yet, please go back and do that.\n");
+                Console.WriteLine("Press Enter to continue.");
+                Console.ReadLine();
+
+                return new Players();
+            }
+        }
+
+        static void TheGame(bool pickedPlayer, Players player)
+        {
+            if (pickedPlayer)
+            {
+                Console.WriteLine("Woo");
+
+                Console.ReadLine();
+
+
+
+
+
+            }
+
+            else
+            {
+                Console.WriteLine("Sorry you haven't picked a player yet, please go back and do that.\n");
+                Console.WriteLine("Press Enter to continue");
+                Console.ReadLine();
+            }
         }
     }
 }
