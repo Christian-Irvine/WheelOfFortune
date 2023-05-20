@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 namespace WheelOfFortune
 {
@@ -21,6 +22,8 @@ namespace WheelOfFortune
         //The entry point of the code.
         static void Main()
         {
+            SpinTheWheel();
+
             Players[] playersArray = SetupPlayers();
             
             Introduction();
@@ -434,11 +437,16 @@ namespace WheelOfFortune
         {
             if (pickedPlayer)
             {
+                Console.WriteLine($"Its time to play the game with our lucky contestant {player.firstName}");
+
                 bool gameRunning = true;
 
                 while (gameRunning)
                 {
+                    Console.WriteLine("Press enter to spin the wheel!!");
+                    Console.ReadLine();
 
+                    SpinTheWheel();
 
 
 
@@ -458,6 +466,53 @@ namespace WheelOfFortune
 
                 return false;
             }
+        }
+
+        //Simulating spinning the wheel.
+        static int SpinTheWheel()
+        {
+            int[] numbers = { -3000, -2000, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2250, 2500, 2750, 3000, 3500, 4000, 4500, 5000 };
+            int pickedNumber = 0;
+            
+
+            for (int i = 0; i < 80; i++)
+            {
+                Console.Clear();
+                pickedNumber = numbers[rand.Next(0, numbers.Length)];
+
+                Console.WriteLine("*+*+*+*+*");
+                Console.WriteLine("+       +");
+                Console.WriteLine("* " + pickedNumber.ToString().PadRight(5) + " *");
+                Console.WriteLine("+       +");
+                Console.WriteLine("*+*+*+*+*");
+
+                Thread.Sleep(i * 2);
+            }
+
+            Thread.Sleep(2000);
+
+            Console.WriteLine($"\nYou rolled {pickedNumber}!\n");
+
+            Console.WriteLine("Press Enter to continue.");
+            Console.ReadLine();
+
+            return pickedNumber;
+        }
+
+        static string PickWord()
+        {
+            string pickedWord;
+            string[] words;
+
+            //Reads every line of word file and assigns each line to array.
+            words = File.ReadAllLines(@"words");
+
+            //Randomly picks one of the words in the aray.
+            pickedWord = words[rand.Next(words.Length)];
+
+            return pickedWord;
+
+            //Note to self (you could put the number of words at beggining of text file to read that first, then you can randomly select number between that, read each line for no reason until you reach that num then use that word).
         }
     }
 }
