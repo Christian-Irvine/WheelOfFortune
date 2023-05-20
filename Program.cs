@@ -99,43 +99,67 @@
 
         static void ListContestants(Players[] playersArray)
         {
-            Players[] playersArraySorted = new Players[PLAYERCOUNT];
+            Players[] sortedPlayersArray = new Players[PLAYERCOUNT];
+            Array.Copy(playersArray, sortedPlayersArray, playersArray.Length);
 
-            playersArraySorted = SortContestants(playersArray);
+            sortedPlayersArray = SortContestants(playersArray);
 
 
 
-            foreach (Players playerInfo in playersArray)
+            foreach (Players playerInfo in sortedPlayersArray)
             {
-                Console.WriteLine(playerInfo.firstName);
+                Console.WriteLine(playerInfo.lastName.PadRight(20) + playerInfo.firstName);
             }
 
             Console.ReadLine();
         }
 
+        //Sorts Players struct array based on last name alphabetically.
         static Players[] SortContestants(Players[] playersArray)
         {
             bool swap = true;
 
+            //While not swapped.
             while (swap == false)
             {
                 swap = false;
 
+                //For every instance in the array, try to swap it.
                 for (int i = 0; i < playersArray.Length - 1; i++)
                 {
-                    if (playersArray[i].lastName[0] > playersArray[i + 1].lastName[0])
+                    //Finds shortest last name in array to avoid 'Index Out of Bounds' error.
+                    int maxLength = FindShortestStringLength(playersArray[i].lastName, playersArray[i + 1].lastName);
+
+                    //Loop in case two letters are the same.
+                    for (int diffCount = 0; diffCount < maxLength; diffCount++)
                     {
-                        Players temp = playersArray[i];
+                        if (playersArray[i].lastName[diffCount] > playersArray[i + 1].lastName[diffCount])
+                        {
+                            Players temp = playersArray[i];
 
-                        playersArray[i] = playersArray[i + 1];
-                        playersArray[i + 1] = temp;
+                            playersArray[i] = playersArray[i + 1];
+                            playersArray[i + 1] = temp;
 
-                        swap = true;
+                            swap = true;
+                        }
                     }
                 }
             }
 
             return playersArray;
+        }
+
+        static int FindShortestStringLength(string first, string second)
+        {
+            if (first.Length >= second.Length)
+            {
+                return second.Length;
+            }
+
+            else
+            {
+                return first.Length;
+            }
         }
 
         static void UpdatePlayerInterests()
