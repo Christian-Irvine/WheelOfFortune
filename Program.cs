@@ -78,10 +78,10 @@
                         UpdatePlayerInterests();
                         break;
                     case 3:
-                        //Task3(input);
+                        PickFinalists();
                         break;
                     case 4:
-                        //Task4(input);
+                        PickPlayer();
                         break;
                     default:
                         Console.WriteLine("Not a valid number, please try again");
