@@ -2,6 +2,7 @@
 {
     internal class Program
     {
+        //Initializes the Players struct type
         struct Players
         {
             public string lastName;
@@ -10,37 +11,42 @@
             public int score;
         }
 
-        static Players[] playersArray;
         static string txtFile = "wheelOfFortune.txt";
+        const int PLAYERCOUNT = 38;
 
         static void Main()
         {
-            int playerCount = 38;
-
-            SetupPlayers(playerCount);
+            Players[] playersArray =  SetupPlayers();
             Introduction();
+            TaskMenu(playersArray);
         }
 
-        static void SetupPlayers(int playerCount)
+        static Players[] SetupPlayers()
         {
-            playersArray = new Players[playerCount];
+            Players[] playersArray;
+
+            //Initializes the stream reader to read from txt files.
+            playersArray = new Players[PLAYERCOUNT];
             StreamReader sr = new StreamReader(@txtFile);
 
-            for (int i = 0; i < playerCount; i++)
+            //Adds every players information to playersArray struct array.
+            for (int i = 0; i < PLAYERCOUNT; i++)
             {
                 playersArray[i].lastName = sr.ReadLine();
                 playersArray[i].firstName = sr.ReadLine();
                 playersArray[i].interest = sr.ReadLine();
                 playersArray[i].score = Convert.ToInt32(sr.ReadLine());
             }
+
+            return playersArray;
         }
 
         static void Introduction()
         {
-            TaskMenu();
+            
         }
 
-        static void TaskMenu()
+        static void TaskMenu(Players[] playersArray)
         {
             bool exitCode = false;
             int padValue = 8;
@@ -72,7 +78,7 @@
                         exitCode = true;
                         break;
                     case 1:
-                        ListContestants();
+                        ListContestants(playersArray);
                         break;
                     case 2:
                         UpdatePlayerInterests();
@@ -91,14 +97,45 @@
             } while (!exitCode);
         }
 
-        static void ListContestants()
+        static void ListContestants(Players[] playersArray)
         {
+            Players[] playersArraySorted = new Players[PLAYERCOUNT];
+
+            playersArraySorted = SortContestants(playersArray);
+
+
+
             foreach (Players playerInfo in playersArray)
             {
                 Console.WriteLine(playerInfo.firstName);
             }
 
             Console.ReadLine();
+        }
+
+        static Players[] SortContestants(Players[] playersArray)
+        {
+            bool swap = true;
+
+            while (swap == false)
+            {
+                swap = false;
+
+                for (int i = 0; i < playersArray.Length - 1; i++)
+                {
+                    if (playersArray[i].lastName[0] > playersArray[i + 1].lastName[0])
+                    {
+                        Players temp = playersArray[i];
+
+                        playersArray[i] = playersArray[i + 1];
+                        playersArray[i + 1] = temp;
+
+                        swap = true;
+                    }
+                }
+            }
+
+            return playersArray;
         }
 
         static void UpdatePlayerInterests()
