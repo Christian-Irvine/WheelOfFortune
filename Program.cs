@@ -71,6 +71,9 @@ namespace WheelOfFortune
             bool exitCode = false;
             int padValue = 8;
             string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player" };
+            Players[] finalists;
+            bool pickedFinalists = false;
+            bool pickedPlayer = false;
 
             do
             {
@@ -104,10 +107,12 @@ namespace WheelOfFortune
                         UpdatePlayerInterests(playersArray);
                         break;
                     case 3:
-                        PickFinalists();
+                        finalists = PickFinalists(playersArray);
+                        pickedFinalists = true;
                         break;
                     case 4:
-                        PickPlayer();
+                        PickPlayer(playersArray, pickedFinalists);
+                        pickedFinalists = false;
                         break;
                     default:
                         Console.WriteLine("Not a valid number, please try again");
@@ -255,7 +260,7 @@ namespace WheelOfFortune
                             Console.WriteLine($"{input}s new interest is {newInterest}.\n");
 
                             //Change the interest of the person in the txt file.
-                            UpdateTextToStructArray(playersArray);
+                            UpdateTextFromStructArray(playersArray);
 
                             Console.WriteLine("Press enter to continue.");
                         }
@@ -276,7 +281,7 @@ namespace WheelOfFortune
             } while (!correctAnswer);
         }
 
-        static void UpdateTextToStructArray(Players[] playersArray)
+        static void UpdateTextFromStructArray(Players[] playersArray)
         {
             string[] txtFile = new string[PLAYERCOUNT * 4];
 
@@ -301,12 +306,32 @@ namespace WheelOfFortune
             sw.Close();
         }
 
-        static void PickFinalists()
+        static Players[] PickFinalists(Players[] playersArray)
+        {
+            Players[] finalists = new Players[10];
+            Players[] playersSubtract = new Players[PLAYERCOUNT];
+
+            Array.Copy(playersArray, playersSubtract, PLAYERCOUNT);
+
+            for (int i = 0; i < 10; i++)
+            {
+                int randNum = rand.Next(PLAYERCOUNT - i);
+
+                finalists[i] = playersSubtract[randNum];
+
+                playersSubtract[randNum] = playersSubtract[playersSubtract.Length - 1];
+                Array.Resize(ref playersSubtract, playersSubtract.Length - 1);
+            }
+
+            return finalists;
+        }
+
+        static void PickPlayer(Players[] playersArray, bool pickedFinalists)
         {
 
         }
 
-        static void PickPlayer()
+        static void TheGame()
         {
 
         }
