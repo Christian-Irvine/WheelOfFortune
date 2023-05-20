@@ -1,4 +1,6 @@
-﻿namespace WheelOfFortune
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WheelOfFortune
 {
     internal class Program
     {
@@ -11,12 +13,25 @@
             public int score;
         }
 
-        static string txtFile = "wheelOfFortune.txt";
+        static Random rand = new Random();
+        static string txtFile = "wheelOfFortuneTest.txt";
         const int PLAYERCOUNT = 38;
 
         static void Main()
         {
-            Players[] playersArray =  SetupPlayers();
+            Players[] playersArray = SetupPlayers();
+
+            
+            for (int i = 0; i < 200; i++)
+            {
+                int one = rand.Next(0, 38), two = rand.Next(0, 38);
+
+                Players temp = playersArray[one];
+                playersArray[one] = playersArray[two];
+                playersArray[two] = temp;
+            }
+            
+
             Introduction();
             TaskMenu(playersArray);
         }
@@ -43,7 +58,10 @@
 
         static void Introduction()
         {
-            
+
+
+
+
         }
 
         static void TaskMenu(Players[] playersArray)
@@ -81,7 +99,7 @@
                         ListContestants(playersArray);
                         break;
                     case 2:
-                        UpdatePlayerInterests();
+                        UpdatePlayerInterests(playersArray);
                         break;
                     case 3:
                         PickFinalists();
@@ -97,18 +115,22 @@
             } while (!exitCode);
         }
 
+        //Lists all of the players in the playersArray.
         static void ListContestants(Players[] playersArray)
         {
+            //Clones the array to create a sorted one without replacing the original.
             Players[] sortedPlayersArray = new Players[PLAYERCOUNT];
             Array.Copy(playersArray, sortedPlayersArray, playersArray.Length);
 
-            sortedPlayersArray = SortContestants(playersArray);
+            //Calls the sorting array, returning an alphabetically sorted array of Players.
+            sortedPlayersArray = SortContestants(sortedPlayersArray);
 
+            Console.WriteLine("Surnames:".PadRight(16) + "First Names:\n");
 
-
+            //Writes each player to the screen.
             foreach (Players playerInfo in sortedPlayersArray)
             {
-                Console.WriteLine(playerInfo.lastName.PadRight(20) + playerInfo.firstName);
+                Console.WriteLine(playerInfo.lastName.PadRight(16) + playerInfo.firstName);
             }
 
             Console.ReadLine();
@@ -117,31 +139,24 @@
         //Sorts Players struct array based on last name alphabetically.
         static Players[] SortContestants(Players[] playersArray)
         {
-            bool swap = true;
+            bool swapOccurred = true;
 
-            //While not swapped.
-            while (swap == false)
+            while (swapOccurred)
             {
-                swap = false;
+                swapOccurred = false;
 
-                //For every instance in the array, try to swap it.
-                for (int i = 0; i < playersArray.Length - 1; i++)
+                for (int contestants = 0; contestants < playersArray.Length - 1; contestants++)
                 {
-                    //Finds shortest last name in array to avoid 'Index Out of Bounds' error.
-                    int maxLength = FindShortestStringLength(playersArray[i].lastName, playersArray[i + 1].lastName);
+                    int maxLength = FindShortestStringLength(playersArray[contestants].lastName, playersArray[contestants + 1].lastName);
+                    int letterIndex = FindEarlistDifferentLetter(maxLength, playersArray[contestants + 1].lastName, playersArray[contestants].lastName);
 
-                    //Loop in case two letters are the same.
-                    for (int diffCount = 0; diffCount < maxLength; diffCount++)
+                    if (playersArray[contestants].lastName[letterIndex] > playersArray[contestants + 1].lastName[letterIndex])
                     {
-                        if (playersArray[i].lastName[diffCount] > playersArray[i + 1].lastName[diffCount])
-                        {
-                            Players temp = playersArray[i];
+                        Players temp = playersArray[contestants];
+                        playersArray[contestants] = playersArray[contestants + 1];
+                        playersArray[contestants + 1] = temp;
 
-                            playersArray[i] = playersArray[i + 1];
-                            playersArray[i + 1] = temp;
-
-                            swap = true;
-                        }
+                        swapOccurred = true;
                     }
                 }
             }
@@ -162,7 +177,20 @@
             }
         }
 
-        static void UpdatePlayerInterests()
+        static int FindEarlistDifferentLetter(int maxLength, string first, string second)
+        {
+            for (int i = 0; i < maxLength; i++)
+            {
+                if (first[i] != second[i])
+                {
+                    return i;
+                }
+            }
+
+            return maxLength - 1;
+        }
+
+        static void UpdatePlayerInterests(Players[] playersArray)
         {
 
         }
