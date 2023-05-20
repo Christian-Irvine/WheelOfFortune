@@ -11,6 +11,7 @@
         }
 
         static Players[] playersArray;
+        static string txtFile = "wheelOfFortune.txt";
 
         static void Main()
         {
@@ -23,17 +24,16 @@
         static void SetupPlayers(int playerCount)
         {
             playersArray = new Players[playerCount];
+            StreamReader sr = new StreamReader(@txtFile);
 
             for (int i = 0; i < playerCount; i++)
             {
-                playersArray[i].lastName = "Henderson";
-                playersArray[i].firstName = "Bill";
-                playersArray[i].interest = "Golf";
-                playersArray[i].score = 0;
+                playersArray[i].lastName = sr.ReadLine();
+                playersArray[i].firstName = sr.ReadLine();
+                playersArray[i].interest = sr.ReadLine();
+                playersArray[i].score = Convert.ToInt32(sr.ReadLine());
             }
         }
-
-
 
         static void Introduction()
         {
@@ -93,7 +93,12 @@
 
         static void ListContestants()
         {
+            foreach (Players playerInfo in playersArray)
+            {
+                Console.WriteLine(playerInfo.firstName);
+            }
 
+            Console.ReadLine();
         }
 
         static void UpdatePlayerInterests()
