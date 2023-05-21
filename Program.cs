@@ -78,20 +78,21 @@ namespace WheelOfFortune
         {
             bool exitCode = false;
             int padValue = 8;
-            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player", "Play Game" };
+            string[] taskName = new string[] { "List Contestants", "Update Players Interests", "Pick Finalists", "Pick Player", "Play Game", "Display Podium" };
             Players[] finalists = new Players[0];
             Players player = new Players();
             bool pickedFinalists = false;
             bool pickedPlayer = false;
 
+            //Run menu until exit program command.
             do
             {
                 Console.Clear();
 
                 Console.WriteLine("Options for the menu are: \n");
 
-
-                for (int i = 1; i < 6; i++)
+                //Display the menu to the screen.
+                for (int i = 1; i < taskName.Length + 1; i++)
                 {
                     Console.Write(i.ToString().PadRight(padValue));
                     Console.WriteLine($"{taskName[i - 1]}");
@@ -104,21 +105,27 @@ namespace WheelOfFortune
 
                 Console.Clear();
 
+                //Check what input number means.
                 switch (input)
                 {
+                    //Exit the program.
                     case 0:
                         exitCode = true;
                         break;
+
                     case 1:
                         ListContestants(playersArray);
                         break;
+
                     case 2:
                         UpdatePlayerInterests(playersArray);
                         break;
+
                     case 3:
                         finalists = PickFinalists(playersArray);
                         pickedFinalists = true;
                         break;
+
                     case 4:
                         player = PickPlayer(finalists, pickedFinalists);
 
@@ -127,6 +134,7 @@ namespace WheelOfFortune
                             pickedPlayer = true;
                         }
                         break;
+
                     case 5:
                         bool playedGame = TheGame(pickedPlayer, player, playersArray);
 
@@ -136,6 +144,12 @@ namespace WheelOfFortune
                             pickedPlayer = false;
                         }
                         break;
+
+                    case 6:
+                        DisplayPodium(playersArray);
+                        break;
+
+                    //Incorrect number.
                     default:
                         Console.WriteLine("Not a valid number, please try again");
                         Thread.Sleep(1000);
@@ -432,6 +446,7 @@ namespace WheelOfFortune
             }
         }
 
+        //The actual gameplay itself.
         static bool TheGame(bool pickedPlayer, Players player, Players[] playersArray)
         {
             if (pickedPlayer)
@@ -547,22 +562,36 @@ namespace WheelOfFortune
                         }
                     }
 
-                    //If word is fully guessed.
+                    //If word is fully guessed by convering char array to string.
                     if (new string(wordGuess) == word) // this is allways returning false
                     {
                         wordGuessed = true;
                     }
                 }
 
+                for (int i = 0; i < playersArray.Length; i++)
+                {
+                    if (player.firstName == playersArray[i].firstName && player.lastName == playersArray[i].lastName)
+                    {
+                        playersArray[i].score += score;
+                    }
+                }
+
+                //Updates the text file with results.
+                UpdateTextFromStructArray(playersArray);
+
                 Console.WriteLine($"Congratulations! {player.firstName}, you completed the word '{word}'.");
                 Console.WriteLine($"Your total score is {score}.\n");
 
-                //Actually update players scores!!!
-
-
+                Console.WriteLine($"(Updated {player.firstName} {player.lastName}s total score.)\n");
 
                 Console.WriteLine("Press Enter to continue.");
                 Console.ReadLine();
+                Console.Clear();
+
+                DisplayPodium(playersArray);
+
+                //Returns that the game has run.
                 return true;
             }
 
@@ -572,6 +601,7 @@ namespace WheelOfFortune
                 Console.WriteLine("Press Enter to continue");
                 Console.ReadLine();
 
+                //Returns that the game hasn't run yet.
                 return false;
             }
         }
@@ -645,6 +675,7 @@ namespace WheelOfFortune
             return pickedWord;
         }
 
+        //Calculate what the input of char means.
         static int ProcessCharResults(int letterCount, int pickedNumber, bool isVowel, char letter, Players player, Players[] playersArray)
         {
             //Displaying how many times the letter appeared.
@@ -699,6 +730,52 @@ namespace WheelOfFortune
             }
 
             return result;
+        }
+
+        //Write the top 5 players to the screen. 
+        static void DisplayPodium(Players[] playersArray)
+        {
+            //Calculate the top 5 players.
+            Players[] podiumPlayers = CalculatePodium(playersArray);
+            
+
+            Console.WriteLine("The current podium is:");
+
+            //Write top 5 to screen.
+            for (int i = 0; i < podiumPlayers.Length; i++)
+            {
+                //Format scores nicely
+                Console.WriteLine((podiumPlayers[i].firstName + " " + podiumPlayers[i].lastName).PadRight(30) + podiumPlayers[i].score.ToString().PadLeft(6));
+            }
+
+            Console.WriteLine("\nPress Enter to continue.");
+            Console.ReadLine();
+        }
+
+        //Sort players by score and return top 5.
+        static Players[] CalculatePodium(Players[] playersArray)
+        {
+            Players[] podiumPlayers = new Players[playersArray.Length];
+            Array.Copy(playersArray, podiumPlayers, playersArray.Length);
+
+            for (int i = 0; i < podiumPlayers.Length; i++)
+            {
+                for (int player = 0; player < podiumPlayers.Length - 1; player++)
+                {
+                    //If score is bigger swap them.
+                    if (podiumPlayers[player].score < podiumPlayers[player + 1].score)
+                    {
+                        Players temp = podiumPlayers[player];
+
+                        podiumPlayers[player] = podiumPlayers[player + 1];
+                        podiumPlayers[player + 1] = temp;
+                    }
+                }
+            }
+
+            //Sets array to only be the top 5
+            Array.Resize(ref podiumPlayers, 5);
+            return podiumPlayers;
         }
     }
 }
