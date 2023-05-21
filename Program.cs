@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Runtime.InteropServices;
 
 namespace WheelOfFortune
@@ -16,7 +17,7 @@ namespace WheelOfFortune
 
         //Initializing rand and some constants.
         static Random rand = new Random();
-        const string TXTFILE = "wheelOfFortuneTest.txt";
+        const string TXTFILE = "wheelOfFortune.txt";
         const int PLAYERCOUNT = 38;
 
         //The entry point of the code.
@@ -127,7 +128,7 @@ namespace WheelOfFortune
                         }
                         break;
                     case 5:
-                        bool playedGame = TheGame(pickedPlayer, player);
+                        bool playedGame = TheGame(pickedPlayer, player, playersArray);
 
                         if (playedGame)
                         {
@@ -431,7 +432,7 @@ namespace WheelOfFortune
             }
         }
 
-        static bool TheGame(bool pickedPlayer, Players player)
+        static bool TheGame(bool pickedPlayer, Players player, Players[] playersArray)
         {
             if (pickedPlayer)
             {
@@ -443,7 +444,8 @@ namespace WheelOfFortune
                 string word = PickWord();
                 //Creates char array of empty
                 char[] wordGuess = new string('_', word.Length).ToCharArray();
-                char[] vowels = { 'a', 'e', 'i', 'o', 'u' };
+                char[] vowels = { 'A', 'E', 'I', 'O', 'U' };
+                char[] guessedLetters = new char[0];
 
                 //While the word hasn't been guessed.
                 while (!wordGuessed)
@@ -454,15 +456,21 @@ namespace WheelOfFortune
                     //Generates random number on wheel.
                     int pickedNumber = SpinTheWheel();
 
-                    Console.WriteLine($"\n{player.firstName} rolled {pickedNumber:C2}!\n");
+                    Console.WriteLine($"\n{player.firstName} rolled {pickedNumber:C0}!\n");
                     Console.WriteLine("Press Enter to continue.");                 
                     Console.ReadLine();
 
                     Console.Clear();
 
-                    Console.WriteLine("Your word is:");
+                    Console.WriteLine($"Your word is:");
                     Console.WriteLine(wordGuess);
-                    Console.WriteLine("\nGuess a letter, or the whole word!\n");
+                    Console.WriteLine($"\nGuess a letter, or the whole word for {pickedNumber:C0}");
+                    Console.Write("Current guessed letters are: ");
+                    foreach (char letterGuess in guessedLetters)
+                    {
+                        Console.Write($"{letterGuess} ");
+                    }
+                    Console.WriteLine("\n");
 
                     string input = Console.ReadLine().ToUpper();
 
@@ -472,24 +480,54 @@ namespace WheelOfFortune
                         bool isVowel = false;
                         char letter = Convert.ToChar(input);
 
-                        foreach (char vowel in vowels) 
+                        bool letterIsGuessed = false;
+
+                        foreach (char letterGuess in guessedLetters)
                         {
-                            //input was a vowel.
-                            if (vowel == letter)
+                            if (letterGuess == letter)
                             {
-                                isVowel = true;
+                                letterIsGuessed = true;
                             }
                         }
-                        
-                        for (int i = 0; i < word.Length; i++)
-                        {
-                            //If word contains letter replace guess with it in that spot.
-                            if (letter == word[i])
-                            {
-                                wordGuess[i] = letter;
 
-                                
+                        //Putting on guessed letters array.
+                        if (!letterIsGuessed)
+                        {
+                            Array.Resize(ref guessedLetters, guessedLetters.Length + 1);
+                            guessedLetters[guessedLetters.Length - 1] = letter;
+
+                            foreach (char vowel in vowels)
+                            {
+                                //input was a vowel.
+                                if (vowel == letter)
+                                {
+                                    isVowel = true;
+                                }
                             }
+
+                            int letterCount = 0;
+
+                            for (int i = 0; i < word.Length; i++)
+                            {
+                                //If word contains letter replace guess with it in that spot.
+                                if (letter == word[i])
+                                {
+                                    wordGuess[i] = letter;
+
+                                    letterCount++;
+                                }
+                            }
+
+                            score += ProcessCharResults(letterCount, pickedNumber, isVowel, letter, player, playersArray);
+
+                            Console.WriteLine($"\nYour current score is {score}.");
+                            Console.Write($"Your current word is ");
+                            Console.WriteLine(wordGuess);
+                        }
+
+                        else
+                        {
+                            Console.WriteLine($"Sorry, you've already guessed {letter}.");
                         }
                     }
 
@@ -500,21 +538,31 @@ namespace WheelOfFortune
                         if (input == word)
                         {
                             wordGuess = word.ToCharArray();
-                            Console.WriteLine($"You Got it!, the word is {word}.");
                             wordGuessed = true;
                         }
 
                         else
                         {
                             Console.WriteLine($"Sorry {input} is not the word.");
-                            Console.WriteLine("\nPress Enter to continue.");
-                            Console.ReadLine();
                         }
+                    }
+
+                    //If word is fully guessed.
+                    if (new string(wordGuess) == word) // this is allways returning false
+                    {
+                        wordGuessed = true;
                     }
                 }
 
-                
+                Console.WriteLine($"Congratulations! {player.firstName}, you completed the word '{word}'.");
+                Console.WriteLine($"Your total score is {score}.\n");
 
+                //Actually update players scores!!!
+
+
+
+                Console.WriteLine("Press Enter to continue.");
+                Console.ReadLine();
                 return true;
             }
 
@@ -536,7 +584,7 @@ namespace WheelOfFortune
             int pickedNumber = 0;
             
             //Wheel animation for loop.
-            for (int i = 0; i < 80; i++)
+            for (int i = 0; i < 30; i++)
             {
                 Console.Clear();
                 pickedNumber = numbers[rand.Next(0, numbers.Length)];
@@ -549,7 +597,7 @@ namespace WheelOfFortune
                 Console.WriteLine("*+*+*+*+*");
 
                 //Waits based on for loop position.
-                Thread.Sleep(i * 2);
+                Thread.Sleep(i * 4);
             }
 
             Thread.Sleep(2000);
@@ -557,14 +605,17 @@ namespace WheelOfFortune
             return pickedNumber;
         }
 
+        //Randomly generating a word from text file of words.
         static string PickWord()
         {
             string pickedWord = null;
             int wordCount = 0;
             const string WORDSFILE = "words.txt";
 
+            //Open the words text file.
             StreamReader sr = new StreamReader(@WORDSFILE);
 
+            //Get total word count.
             while (!sr.EndOfStream)
             {
                 sr.ReadLine();
@@ -577,10 +628,12 @@ namespace WheelOfFortune
 
             int wordIndex = rand.Next(wordCount);
 
+            //Run until at word index.
             for (int i = 0; i <= wordIndex; i++)
             {
                 sr2.ReadLine();
 
+                //If at word index, set that as word.
                 if (i == wordIndex)
                 {
                     pickedWord = sr2.ReadLine();
@@ -590,6 +643,62 @@ namespace WheelOfFortune
             sr2.Close();
 
             return pickedWord;
+        }
+
+        static int ProcessCharResults(int letterCount, int pickedNumber, bool isVowel, char letter, Players player, Players[] playersArray)
+        {
+            //Displaying how many times the letter appeared.
+            switch (letterCount)
+            {
+                case 0:
+                case >= 2:
+                    Console.WriteLine($"{letter} appeared {letterCount} times.");
+                    break;
+
+                case 1:
+                    Console.WriteLine($"{letter} appeared {letterCount} time.");
+                    break;
+            }
+
+            int result;
+
+            //If you didn't pick a vowel.
+            if (!isVowel)
+            {
+                result = letterCount * pickedNumber;
+            }
+
+            //If is a vowel.
+            else
+            {
+                if (pickedNumber < 0)
+                {
+                    result = pickedNumber;
+                }
+
+                else
+                {
+                    result = letterCount * pickedNumber * -1;
+                }
+            }
+
+            //If result than 0.
+            if (result < 0)
+            {
+                Console.WriteLine($"\nSorry you lose {result} points");
+            }
+
+            else if (result > 0)
+            {
+                Console.WriteLine($"\nWoohoo. You gain {result} points!");
+            }
+
+            else
+            {
+                Console.WriteLine("\nSorry you didn't get it, you don't gain any points.");
+            }
+
+            return result;
         }
     }
 }
