@@ -59,7 +59,7 @@ namespace WheelOfFortune
             WriteInstructions();
             Console.WriteLine("Good luck and have fun!\n\n");
 
-            Console.WriteLine("Press Enter to continue");
+            Console.WriteLine("Press 'Enter' to continue.");
             Console.ReadLine();
         }
 
@@ -99,7 +99,7 @@ namespace WheelOfFortune
                 }
                 Console.Write("0".PadRight(padValue));
                 Console.WriteLine("Exit Program\n");
-                Console.WriteLine("Please input a number");
+                Console.WriteLine("Please input a number.");
 
                 int input = Convert.ToInt32(Console.ReadLine());
 
@@ -115,6 +115,8 @@ namespace WheelOfFortune
 
                     case 1:
                         ListContestants(playersArray);
+                        Console.WriteLine("\n\nPress 'Enter' to continue.");
+                        Console.ReadLine();
                         break;
 
                     case 2:
@@ -177,8 +179,6 @@ namespace WheelOfFortune
             {
                 Console.WriteLine(playerInfo.lastName.PadRight(20) + " | " + playerInfo.firstName.PadRight(20) + " | " + playerInfo.interest.PadRight(20) + " | " + playerInfo.score.ToString().PadLeft(12));
             }
-
-            Console.ReadLine();
         }
 
         //Sorts Players struct array based on last name alphabetically. (This was written before we covered the .Compare() Method, though it does still work for each letter even if inefficient.)
@@ -307,7 +307,7 @@ namespace WheelOfFortune
                             //Change the interest of the person in the txt file.
                             UpdateTextFromStructArray(playersArray);
 
-                            Console.WriteLine("Press enter to continue.");
+                            Console.WriteLine("Press 'Enter' to continue.");
                             Console.ReadLine();
                         }
                     }
@@ -380,7 +380,7 @@ namespace WheelOfFortune
                 Console.WriteLine(player.firstName.PadRight(18) + player.lastName);
             }
 
-            Console.WriteLine("\n\nPress Enter to continue.");
+            Console.WriteLine("\n\nPress 'Enter' to continue.");
 
             Console.ReadLine();
 
@@ -417,7 +417,7 @@ namespace WheelOfFortune
                     Console.WriteLine(players.firstName.PadRight(18) + players.lastName);
                 }
 
-                Console.WriteLine("\nPress Enter to pick the finalist");
+                Console.WriteLine("\nPress 'Enter' to pick the finalist");
                 Console.ReadLine();
 
                 //Plays loop of picking player.
@@ -429,7 +429,7 @@ namespace WheelOfFortune
                 Console.WriteLine($"Congradulations to {player.firstName} {player.lastName}.");
                 Console.WriteLine("You get to play the game!\n");
 
-                Console.WriteLine("Press Enter to continue.");
+                Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
 
                 return player;
@@ -439,7 +439,7 @@ namespace WheelOfFortune
             else
             {
                 Console.WriteLine("Sorry you haven't picked the finalists yet, please go back and do that.\n");
-                Console.WriteLine("Press Enter to continue.");
+                Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
 
                 //Empty player to do a check with.
@@ -466,21 +466,25 @@ namespace WheelOfFortune
                 //While the word hasn't been guessed.
                 while (!wordGuessed)
                 {
-                    Console.WriteLine("Press Enter to spin the wheel!!");
+                    Console.WriteLine("Press 'Enter' to spin the wheel!!");
                     Console.ReadLine();
 
                     //Generates random number on wheel.
                     int pickedNumber = SpinTheWheel();
 
                     Console.WriteLine($"\n{player.firstName} rolled {pickedNumber:C0}!\n");
-                    Console.WriteLine("Press Enter to continue.");                 
+                    Console.WriteLine("Press 'Enter' to continue.");                 
                     Console.ReadLine();
 
                     Console.Clear();
 
                     Console.WriteLine($"Your word is:");
-                    Console.WriteLine(wordGuess);
-                    Console.WriteLine($"\nGuess a letter, or the whole word for {pickedNumber:C0}");
+                    foreach (char letter in wordGuess)
+                    {
+                        Console.Write(letter + " ");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine($"\nGuess a letter for {pickedNumber:C0}");
                     Console.Write("Current guessed letters are: ");
                     foreach (char letterGuess in guessedLetters)
                     {
@@ -488,7 +492,23 @@ namespace WheelOfFortune
                     }
                     Console.WriteLine("\n");
 
-                    string input = Console.ReadLine().ToUpper();
+                    bool alreadyGuessed = true;
+                    string input = "";
+
+                    //Making sure the letter isn't already guessed.
+                    while (alreadyGuessed)
+                    {
+                        input = Console.ReadLine().ToUpper();
+
+                        if (guessedLetters.Contains(Convert.ToChar(input)))
+                        {
+                            Console.WriteLine("Sorry you already guesses {input}, try another letter.");
+                        }
+                        else
+                        {
+                            alreadyGuessed = false;
+                        }
+                    }
 
                     //If single character guess.
                     if (input.Length == 1)
@@ -547,22 +567,6 @@ namespace WheelOfFortune
                         }
                     }
 
-                    //If not single character.
-                    else
-                    {
-                        //If correct.
-                        if (input == word)
-                        {
-                            wordGuess = word.ToCharArray();
-                            wordGuessed = true;
-                        }
-
-                        else
-                        {
-                            Console.WriteLine($"Sorry {input} is not the word.");
-                        }
-                    }
-
                     //If word is fully guessed by convering char array to string.
                     if (new string(wordGuess) == word) // this is allways returning false
                     {
@@ -586,9 +590,9 @@ namespace WheelOfFortune
 
                 Console.WriteLine($"(Updated {player.firstName} {player.lastName}s total score.)\n");
 
-                Console.WriteLine("Press Enter to continue.");
+                Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
-                Console.Clear();
+                Console.Clear();    
 
                 DisplayPodium(playersArray);
 
@@ -599,7 +603,7 @@ namespace WheelOfFortune
             else
             {
                 Console.WriteLine("Sorry you haven't picked a player yet, please go back and do that.\n");
-                Console.WriteLine("Press Enter to continue");
+                Console.WriteLine("Press 'Enter' to continue.");
                 Console.ReadLine();
 
                 //Returns that the game hasn't run yet.
@@ -749,7 +753,7 @@ namespace WheelOfFortune
                 Console.WriteLine((podiumPlayers[i].firstName + " " + podiumPlayers[i].lastName).PadRight(30) + podiumPlayers[i].score.ToString().PadLeft(6));
             }
 
-            Console.WriteLine("\nPress Enter to continue.");
+            Console.WriteLine("\nPress 'Enter' to continue.");
             Console.ReadLine();
         }
 
