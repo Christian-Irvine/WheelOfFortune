@@ -36,18 +36,31 @@ namespace WheelOfFortune
 
             //Initializes the stream reader to read from txt files.
             playersArray = new Players[PLAYERCOUNT];
-            StreamReader sr = new StreamReader(@TXTFILE);
 
-            //Adds every players information to playersArray struct array.
-            for (int i = 0; i < PLAYERCOUNT; i++)
+            //If the file doesn't exist
+            if (!File.Exists(@TXTFILE))
             {
-                playersArray[i].lastName = sr.ReadLine();
-                playersArray[i].firstName = sr.ReadLine();
-                playersArray[i].interest = sr.ReadLine();
-                playersArray[i].score = Convert.ToInt32(sr.ReadLine());
-            }
+                Console.WriteLine($"Sorry, it looks like {TXTFILE}, doesn't exist. Please add it and rerun the program.");
 
-            sr.Close();
+                Console.WriteLine("Press 'Enter' to continue.");
+                Console.ReadLine();
+            }
+            //If the file does exist.
+            else
+            {
+                StreamReader sr = new StreamReader(@TXTFILE);
+
+                //Adds every players information to playersArray struct array.
+                for (int i = 0; i < PLAYERCOUNT; i++)
+                {
+                    playersArray[i].lastName = sr.ReadLine();
+                    playersArray[i].firstName = sr.ReadLine();
+                    playersArray[i].interest = sr.ReadLine();
+                    playersArray[i].score = Convert.ToInt32(sr.ReadLine());
+                }
+
+                sr.Close();
+            }
 
             return playersArray;
         }
