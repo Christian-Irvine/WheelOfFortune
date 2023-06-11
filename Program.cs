@@ -180,7 +180,7 @@ namespace WheelOfFortune
             Console.ReadLine();
         }
 
-        //Sorts Players struct array based on last name alphabetically.
+        //Sorts Players struct array based on last name alphabetically. (This was written before we covered the .Compare() Method, though it does still work for each letter even if inefficient.)
         static Players[] SortContestants(Players[] playersArray)
         {
             bool swapOccurred = true;
