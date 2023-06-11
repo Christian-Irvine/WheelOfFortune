@@ -167,14 +167,15 @@ namespace WheelOfFortune
 
             //Calls the sorting array, returning an alphabetically sorted array of Players.
             sortedPlayersArray = SortContestants(sortedPlayersArray);
-            Console.WriteLine("-= Name Lister =-\n");
+            Console.WriteLine("-= All Contestants =-\n");
 
-            Console.WriteLine("Surnames:".PadRight(16) + "First Names:\n");
+            Console.WriteLine("Surnames:".PadRight(23) + "First Names:".PadRight(23) + "Interest:".PadRight(23) + "Score:");
+            Console.WriteLine("-------------------------------------------------------------------------------");
 
             //Writes each player to the screen.
             foreach (Players playerInfo in sortedPlayersArray)
             {
-                Console.WriteLine(playerInfo.lastName.PadRight(16) + playerInfo.firstName);
+                Console.WriteLine(playerInfo.lastName.PadRight(20) + " | " + playerInfo.firstName.PadRight(20) + " | " + playerInfo.interest.PadRight(20) + " | " + playerInfo.score.ToString().PadLeft(12));
             }
 
             Console.ReadLine();
