@@ -479,13 +479,16 @@ namespace WheelOfFortune
                     Console.Clear();
 
                     Console.WriteLine($"Your word is:");
+
                     foreach (char letter in wordGuess)
                     {
                         Console.Write(letter + " ");
                     }
+
                     Console.WriteLine();
                     Console.WriteLine($"\nGuess a letter for {pickedNumber:C0}");
                     Console.Write("Current guessed letters are: ");
+
                     foreach (char letterGuess in guessedLetters)
                     {
                         Console.Write($"{letterGuess} ");
@@ -500,13 +503,22 @@ namespace WheelOfFortune
                     {
                         input = Console.ReadLine().ToUpper();
 
-                        if (guessedLetters.Contains(Convert.ToChar(input)))
+                        if (input.Length == 1)
                         {
-                            Console.WriteLine("Sorry you already guesses {input}, try another letter.");
+                            if (guessedLetters.Contains(Convert.ToChar(input)))
+                            {
+                                Console.WriteLine($"Sorry you already guessed {input}, try another letter.");
+                            }
+
+                            else
+                            {
+                                alreadyGuessed = false;
+                            }
                         }
+
                         else
                         {
-                            alreadyGuessed = false;
+                            Console.WriteLine("Please only enter one letter.");
                         }
                     }
 
@@ -645,7 +657,7 @@ namespace WheelOfFortune
         {
             string pickedWord = null;
             int wordCount = 0;
-            const string WORDSFILE = "words.txt";
+            const string WORDSFILE = @"../../../words.txt";
 
             //Open the words text file.
             StreamReader sr = new StreamReader(@WORDSFILE);
